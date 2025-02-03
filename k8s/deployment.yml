@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: edge-service
+    labels:
+        app: edge-service
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: edge-service
+    template:
+        metadata:
+            labels:
+                app: edge-service
+        spec:
+            containers:
+                -   name: edge-service
+                    image: edge-service
+                    imagePullPolicy: IfNotPresent
+                    lifecycle:
+                        preStop:
+                            exec:
+                                command: [ "sh", "-c", "sleep 5" ]
+                    ports:
+                        -   containerPort: 9001
+                    env:
+                        -   name: BPL_JVM_THREAD_COUNT
+                            value: "50"
+                        -   name: SPRING_DATA_REDIS_HOST
+                            value: polar-redis
+                        -   name: SPRING_DATA_REDIS_PORT
+                            value: "6379"
+                        -   name: SPRING_CLOUD_CONFIG_URI
+                            value: http://config-service

@@ -1,0 +1,98 @@
+server:
+    port: 9000
+    netty:
+        connection-timeout: 2s
+        idle-timeout: 15s
+    shutdown: graceful
+
+spring:
+    config:
+        import: 'optional:configserver:'
+    application:
+        name: edge-service
+    lifecycle:
+        timeout-per-shutdown-phase: 15s
+    session:
+        store-type: redis
+        timeout: 10m
+        redis:
+            namespace: polar:edge
+    cloud:
+        config:
+            fail-fast: false # In production, set to true
+            retry:
+                max-attempts: 5
+                initial-interval: 1000
+                max-interval: 2000
+                multiplier: 1.1
+            request-connect-timeout: 5000
+            request-read-timeout: 5000
+            uri: http://localhost:8888
+
+        gateway:
+            routes:
+                -   id: catalog-route
+                    uri: ${CATALOG_SERVICE_URL:http://localhost:9001}/books
+                    predicates:
+                        - Path=/books/**
+                    filters:
+                        -   name: CircuitBreaker
+                            args:
+                                name: catalogCircuitBreaker
+                                fallbackUri: forward:/catalog-fallback
+                -   id: order-route
+                    uri: ${ORDER_SERVICE_URL:http://localhost:9002}/orders
+                    predicates:
+                        - Path=/orders/**
+                    filters:
+                        -   name: CircuitBreaker
+                            args:
+                                name: orderCircuitBreaker
+            httpclient:
+                connect-timeout: 2000
+                response-timeout: 5s
+                pool:
+                    type: elastic
+                    max-idle-time: 15s
+                    max-life-time: 60s
+            default-filters:
+                -   name: Retry
+                    args:
+                        retries: 3
+                        method: GET
+                        series: SERVER_ERROR
+                        exceptions: java.io.IOException, java.util.concurrent.TimeoutException
+                        backoff:
+                            firstBackoff: 50ms
+                            maxBackoff: 500ms
+                            factor: 2
+                            basedOnPreviousValue: false
+                -   name: RequestRateLimiter
+                    args:
+                        redis-rate-limiter:
+                            replenishRate: 10
+                            burstCapacity: 20
+                            requestedTokens: 1
+                - SaveSession
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            connect-timeout: 2s
+            timeout: 1s
+resilience4j:
+    circuitbreaker:
+        configs:
+            default:
+                sliding-window-size: 20
+                permitted-number-of-calls-in-half-open-state: 5
+                failure-rate-threshold: 50
+                wait-duration-in-open-state: 15000
+    timelimiter:
+        configs:
+            default:
+                timeout-duration: 5s
+
+logging:
+    level:
+        io.github.resilience4j: DEBUG
