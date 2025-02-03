@@ -33,3 +33,7 @@ spec:
                             value: "6379"
                         -   name: SPRING_CLOUD_CONFIG_URI
                             value: http://config-service
+                        -   name: CATALOG_SERVICE_URL
+                            value: http://catalog-service
+                        -   name: ORDER_SERVICE_URL
+                            value: http://order-service
