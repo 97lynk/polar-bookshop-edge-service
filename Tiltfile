@@ -15,4 +15,4 @@ k8s_yaml(['k8s/deployment.yml', 'k8s/service.yml'])
 
 # How to access the application (port forwarding)
 # Manage
-k8s_resource('edge-service', port_forwards=['9002'])
+k8s_resource('edge-service', port_forwards=['9000'])
