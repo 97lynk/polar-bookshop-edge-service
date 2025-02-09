@@ -6,6 +6,17 @@ server:
     shutdown: graceful
 
 spring:
+    security:
+        oauth2:
+            client:
+                registration:
+                    keycloak:
+                        client-id: edge-service
+                        client-secret: polar-keycloak-secret
+                        scope: openid
+                provider:
+                    keycloak:
+                        issuer-uri: http://localhost:8080/realms/PolarBookshop
     config:
         import: 'optional:configserver:'
     application:
@@ -48,6 +59,10 @@ spring:
                         -   name: CircuitBreaker
                             args:
                                 name: orderCircuitBreaker
+                -   id: spa-route
+                    uri: ${SPA_URL:http://localhost:9004}
+                    predicates:
+                        - Path=/,/*.css,/*.js,/favicon.ico
             httpclient:
                 connect-timeout: 2000
                 response-timeout: 5s
@@ -96,3 +111,4 @@ resilience4j:
 logging:
     level:
         io.github.resilience4j: DEBUG
+        root: debug
