@@ -2,9 +2,11 @@ package com.polarbookshop.edgeservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -22,7 +24,12 @@ class EdgeServiceApplicationTests {
 
     @Container
     static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0"))
-                    .withExposedPorts(REDIS_PORT);
+            .withExposedPorts(REDIS_PORT);
+
+
+    @MockitoBean
+    ReactiveClientRegistrationRepository clientRegistrationRepository;
+
 
     @DynamicPropertySource
     static void redisProperties(DynamicPropertyRegistry registry) {
