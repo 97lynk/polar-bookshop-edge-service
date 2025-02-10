@@ -11,7 +11,7 @@ custom_build(
 
 # How to deploy the application (Kubernetes YAML manifests)
 # Deploy
-k8s_yaml(['k8s/deployment.yml', 'k8s/service.yml'])
+k8s_yaml(['k8s/deployment.yml', 'k8s/service.yml', 'k8s/ingress.yml'])
 
 # How to access the application (port forwarding)
 # Manage
