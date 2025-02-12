@@ -13,10 +13,29 @@ spring:
                     keycloak:
                         client-id: edge-service
                         client-secret: polar-keycloak-secret
-                        scope: openid
+                        scope:
+                            - openid
+                            - roles
+                    slack:
+                        client-id: ''
+                        client-secret: ''
+                        scope:
+                            - openid
+                            - profile
+                            - email
+                        authorization-grant-type: authorization_code
+                        redirect-uri: "https://tony97.io.vn/login/oauth2/code/slack"
+                        client-name: slack
+                        provider: slack
                 provider:
+                    slack:
+                        authorization-uri: 'https://slack.com/openid/connect/authorize'
+                        token-uri: 'https://slack.com/api/openid.connect.token'
+                        user-info-uri: 'https://slack.com/api/openid.connect.userInfo'
+                        user-name-attribute: name
+                        jwk-set-uri: 'https://slack.com/openid/connect/keys'
                     keycloak:
-                        issuer-uri: http://localhost:8080/realms/PolarBookshop
+                        issuer-uri: 'http://localhost:8080/realms/PolarBookshop'
     config:
         import: 'optional:configserver:'
     application:
@@ -89,6 +108,7 @@ spring:
                             burstCapacity: 20
                             requestedTokens: 1
                 - SaveSession
+                - TokenRelay
     data:
         redis:
             host: localhost
@@ -110,5 +130,5 @@ resilience4j:
 
 #logging:
 #    level:
-#        io.github.resilience4j: DEBUG
-#        root: debug
+        #        io.github.resilience4j: DEBUG
+#        'root': trace
