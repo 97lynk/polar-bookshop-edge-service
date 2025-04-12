@@ -37,7 +37,7 @@ spring:
                     keycloak:
                         issuer-uri: ${KEYCLOAK_ISSUER_URL:http://localhost:8080/realms/PolarBookshop}
     config:
-        import: 'optional:configserver:'
+        import: ''
     application:
         name: edge-service
     lifecycle:
@@ -49,6 +49,7 @@ spring:
             namespace: polar:edge
     cloud:
         config:
+            enabled: false
             fail-fast: false # In production, set to true
             retry:
                 max-attempts: 5
@@ -178,5 +179,6 @@ management:
 logging:
     level:
         io.github.resilience4j: DEBUG
+        root: debug
     pattern:
         level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
