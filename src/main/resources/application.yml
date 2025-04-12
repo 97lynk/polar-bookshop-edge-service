@@ -1,3 +1,6 @@
+polar:
+    greeting: Welcome to the Edge from a local environment!
+
 server:
     port: 9000
     netty:
@@ -179,6 +182,5 @@ management:
 logging:
     level:
         io.github.resilience4j: DEBUG
-        root: debug
     pattern:
         level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
